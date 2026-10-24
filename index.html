@@ -4,228 +4,683 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Записки механика</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: одна колонка, как страница из рабочего блокнота; сверху шапка-табличка, ниже заказ-наряд "в работе" и лента записей */
 :root {
-  --bg: #e8ebeb;
-  --surface: #f6f7f7;
-  --fg: #172120;
-  --muted: #5a6866;
-  --line: #c3cac9;
-  --accent: #245a8d;
-  --accent-fg: #ffffff;
-  --brass: #9a7420;
-  --font-display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif;
+  --bg: #f1f2ee;
+  --surface: #fbfbf9;
+  --fg: #26302f;
+  --muted: #5f6b69;
+  --line: #d9ddd7;
+  --accent: #3f6b63;
+  --on-accent: #ffffff;
+  --sage: #8fa898;
+  --sage-t: #dde7df;
+  --blue: #6d8fa8;
+  --blue-t: #dce7ee;
+  --sand: #c9b27a;
+  --sand-t: #eee5d0;
+  --clay: #b7705f;
+  --clay-t: #f0ddd5;
+  --glass: #dbe8ee;
+  --car-blue: #6489a3;
+  --car-clay: #b7705f;
+  --car-sand: #c8a96c;
+  --wheel: #2b3331;
+  --hub: #d8dcd8;
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
   --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #111819;
-    --surface: #1a2324;
-    --fg: #e3e8e7;
-    --muted: #93a2a0;
-    --line: #2f3c3d;
-    --accent: #78aadb;
-    --accent-fg: #0e1517;
-    --brass: #d2a94c;
-    color-scheme: dark;
-  }
-}
 :root[data-theme="dark"] {
-  --bg: #111819;
-  --surface: #1a2324;
-  --fg: #e3e8e7;
-  --muted: #93a2a0;
-  --line: #2f3c3d;
-  --accent: #78aadb;
-  --accent-fg: #0e1517;
-  --brass: #d2a94c;
+  --bg: #1d2423;
+  --surface: #263130;
+  --fg: #e9eeeb;
+  --muted: #a3b0ad;
+  --line: #3a4745;
+  --accent: #8fc2b6;
+  --on-accent: #12201d;
+  --sage-t: #2f3f3a;
+  --blue-t: #2c3b46;
+  --sand-t: #3d3a2d;
+  --clay-t: #43322d;
+  --glass: #3c4f5c;
   color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body {
+  margin: 0;
   background: var(--bg);
   color: var(--fg);
   font-family: var(--font-body);
   font-size: 16px;
-  line-height: 1.6;
-  padding-block: 0 48px;
-  padding-left: max(16px, env(safe-area-inset-left, 0px));
-  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  line-height: 1.65;
 }
-.wrap { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); background: var(--surface); z-index: 30; }
+.in { max-width: 720px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 a { color: var(--accent); }
+button { font-family: inherit; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.stack { display: flex; flex-direction: column; gap: 44px; padding-block: 32px 64px; }
 
-/* Шапка-табличка */
-header { padding-top: 28px; display: flex; flex-direction: column; gap: 10px; border-bottom: 3px solid var(--fg); padding-bottom: 18px; }
-.plate { font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--brass); }
-h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(44px, 14vw, 68px); line-height: .95; text-transform: uppercase; letter-spacing: .01em; margin: 0; text-wrap: balance; }
-.lead { margin: 0; color: var(--muted); max-width: 46ch; }
+.top { background: var(--surface); }
+.stripe { height: 5px; background: linear-gradient(90deg, var(--sage) 0 25%, var(--blue) 25% 50%, var(--sand) 50% 75%, var(--clay) 75% 100%); }
+.brand { display: flex; align-items: center; gap: 12px; padding-block: 14px; }
+.brand svg { color: var(--accent); flex: none; }
+.brand-name { font-family: var(--font-display); font-weight: 700; font-size: 22px; letter-spacing: -.01em; flex: 1; min-width: 0; }
+.theme-btn { background: transparent; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; min-height: 40px; padding: 0 16px; font-size: 14px; cursor: pointer; }
 
-h2 { font-family: var(--font-display); font-weight: 600; font-size: 26px; text-transform: uppercase; letter-spacing: .04em; margin: 0 0 12px; text-wrap: balance; }
+.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--surface); border-bottom: 1px solid var(--line); }
+.tabs .in > div { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.tabs .in > div::-webkit-scrollbar { display: none; }
+.tab { flex: none; min-height: 52px; padding: 0 14px; background: transparent; color: var(--muted); border: 0; border-bottom: 3px solid transparent; font-family: var(--font-body); font-weight: 500; font-size: 16px; cursor: pointer; }
+.tab[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); font-weight: 600; }
 
-/* Заказ-наряд */
-.job { background: var(--surface); border: 1px solid var(--line); border-top: 6px solid var(--accent); padding: 18px 16px; display: flex; flex-direction: column; gap: 14px; }
-.job-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: baseline; }
+.hero { background: var(--blue-t); }
+.hero .in { padding-block: 36px 0; display: flex; flex-direction: column; gap: 16px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(34px, 9.4vw, 72px); line-height: 1.02; letter-spacing: -.02em; margin: 0; overflow-wrap: anywhere; text-wrap: balance; }
+.hero-lead { margin: 0; max-width: 44ch; font-size: 17px; color: var(--fg); }
+.scene { margin-top: 14px; }
+.scene svg { display: block; width: 100%; max-width: 440px; height: auto; margin-left: auto; --well: var(--blue-t); color: var(--car-clay); }
+.road { height: 10px; background: var(--fg); opacity: .85; }
+
+.pagehead .in { padding-block: 30px 32px; display: flex; flex-direction: column; gap: 8px; }
+.pagehead h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(34px, 9vw, 52px); line-height: 1.05; letter-spacing: -.02em; margin: 0; }
+.pagehead p { margin: 0; max-width: 46ch; color: var(--muted); }
+.ph-clay { background: var(--clay-t); }
+.ph-sage { background: var(--sage-t); }
+.ph-sand { background: var(--sand-t); }
+.ph-blue { background: var(--blue-t); }
+
+h3.sec { font-family: var(--font-display); font-weight: 700; font-size: 26px; line-height: 1.1; letter-spacing: -.01em; margin: 0 0 16px; }
+.note { font-size: 13px; color: var(--muted); margin: 0; }
+.ex { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; background: var(--sand-t); color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; align-self: flex-start; }
+
+.job { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px 18px; display: flex; flex-direction: column; gap: 16px; }
+.job-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
 .job-no { font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
-.job-title { font-family: var(--font-display); font-size: 28px; font-weight: 700; text-transform: uppercase; line-height: 1.05; margin: 0; }
-dl.specs { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; font-size: 15px; }
+.job-title { font-family: var(--font-display); font-size: 28px; font-weight: 700; letter-spacing: -.01em; line-height: 1.1; margin: 0; }
+dl.specs { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 8px 18px; font-size: 15px; }
 dl.specs dt { font-family: var(--font-mono); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding-top: 3px; }
 dl.specs dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
-.progress { height: 10px; background: var(--bg); border: 1px solid var(--line); }
-.progress > span { display: block; height: 100%; width: 40%; background: var(--accent); }
-.progress-cap { font-family: var(--font-mono); font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
-.note { font-size: 13px; color: var(--muted); margin: 0; }
+.progress { height: 10px; background: var(--bg); border-radius: 999px; overflow: hidden; }
+.progress > span { display: block; height: 100%; width: 40%; background: var(--accent); border-radius: 999px; }
+.progress-cap { font-family: var(--font-mono); font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; margin-top: 8px; }
 
-/* Фильтры */
-.filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-.chip { font: 500 14px var(--font-body); background: transparent; color: var(--fg); border: 1.5px solid var(--fg); padding: 8px 14px; min-height: 44px; cursor: pointer; }
-.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+.svcs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.svc { padding: 18px 16px; min-height: 152px; display: flex; flex-direction: column; gap: 8px; border-radius: 14px; min-width: 0; }
+.svc h4 { font-family: var(--font-display); font-weight: 600; font-size: 19px; line-height: 1.2; letter-spacing: -.01em; margin: 0; }
+.svc p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--fg); opacity: .82; }
+.c-sage { background: var(--sage-t); }
+.c-blue { background: var(--blue-t); }
+.c-sand { background: var(--sand-t); }
+.c-clay { background: var(--clay-t); }
+@media (min-width: 640px) { .svcs { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
-/* Записи */
+ol.steps { list-style: none; margin: 0; padding: 0; }
+ol.steps li { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 14px; padding: 16px 0; border-top: 1px solid var(--line); }
+ol.steps li:last-child { border-bottom: 1px solid var(--line); }
+.n { font-family: var(--font-display); font-weight: 600; font-size: 36px; line-height: 1; color: var(--clay); }
+ol.steps h4 { font-family: var(--font-display); font-weight: 600; font-size: 19px; margin: 0; line-height: 1.25; }
+ol.steps p { margin: 4px 0 0; font-size: 15px; color: var(--muted); }
+
+.contact { background: var(--sage-t); border-radius: 14px; padding: 24px 18px; display: flex; flex-direction: column; gap: 14px; }
+.contact h3 { font-family: var(--font-display); font-weight: 700; font-size: 26px; margin: 0; line-height: 1.1; }
+.contact dl { margin: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 18px; }
+.contact dt { font-family: var(--font-mono); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding-top: 3px; }
+.contact dd { margin: 0; overflow-wrap: anywhere; }
+
+.filters, .seg { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font: 500 14px var(--font-body); background: var(--surface); color: var(--fg); border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; min-height: 44px; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 .posts { display: flex; flex-direction: column; gap: 12px; }
-.post { background: var(--surface); border: 1px solid var(--line); }
-.post[hidden] { display: none; }
-.post summary { list-style: none; cursor: pointer; padding: 16px; display: flex; flex-direction: column; gap: 6px; }
+.post { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+.post summary { list-style: none; cursor: pointer; padding: 18px 16px; display: flex; flex-direction: column; gap: 8px; }
 .post summary::-webkit-details-marker { display: none; }
-.meta { font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 12px; }
-.tag { color: var(--brass); }
-.post h3 { font-family: var(--font-display); font-size: 25px; line-height: 1.08; text-transform: uppercase; font-weight: 700; margin: 0; text-wrap: balance; }
-.more { font-size: 14px; color: var(--accent); font-weight: 500; }
+.meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.tagc { padding: 2px 10px; border-radius: 999px; color: var(--fg); }
+.t-repair { background: var(--clay-t); }
+.t-restore { background: var(--sand-t); }
+.t-tips { background: var(--sage-t); }
+.post h4 { font-family: var(--font-display); font-size: 22px; line-height: 1.2; letter-spacing: -.01em; font-weight: 600; margin: 0; text-wrap: balance; }
+.more { font-size: 14px; font-weight: 600; color: var(--accent); }
 .post[open] .more::after { content: "Свернуть"; }
 .post:not([open]) .more::after { content: "Читать"; }
-.body { padding: 0 16px 18px; display: flex; flex-direction: column; gap: 12px; max-width: 62ch; }
-.body p, .body ul { margin: 0; }
-.body ul { padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+.pbody { padding: 0 16px 20px; display: flex; flex-direction: column; gap: 12px; max-width: 62ch; }
+.pbody p, .pbody ul { margin: 0; }
+.pbody ul { padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
 
-footer { border-top: 1px solid var(--line); padding-top: 16px; font-size: 14px; color: var(--muted); display: flex; flex-direction: column; gap: 8px; }
-footer strong { color: var(--fg); font-weight: 600; }
-.theme-btn { align-self: flex-start; }
-@media (prefers-reduced-motion: no-preference) { .progress > span { transition: width .4s ease; } }
+.projs { display: flex; flex-direction: column; gap: 18px; }
+.proj { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
+.shot { padding: 22px 16px 0; background: var(--shot); --well: var(--shot); }
+.shot svg { display: block; width: 100%; max-width: 360px; height: auto; margin: 0 auto; }
+.shot .road { height: 8px; margin-top: -1px; }
+.proj-in { padding: 18px 16px 20px; display: flex; flex-direction: column; gap: 12px; }
+.proj-in h4 { font-family: var(--font-display); font-size: 24px; font-weight: 700; letter-spacing: -.01em; line-height: 1.15; margin: 0; }
+.st { align-self: flex-start; font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; padding: 3px 12px; border-radius: 999px; color: var(--fg); }
+
+.tools { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.tool { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.ico { width: 60px; height: 60px; display: grid; place-items: center; border-radius: 14px; color: var(--fg); }
+.ico svg { width: 38px; height: 38px; }
+.tool h4 { font-family: var(--font-display); font-weight: 600; font-size: 18px; line-height: 1.2; letter-spacing: -.01em; margin: 0; }
+.tool p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--muted); }
+@media (min-width: 640px) { .tools { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+.deck { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 16px; }
+.deck svg { width: 140px; height: auto; flex: none; }
+.deck p { margin: 0; flex: 1 1 200px; min-width: 0; color: var(--muted); }
+.deck strong { font-family: var(--font-display); font-size: 22px; font-weight: 700; letter-spacing: -.01em; line-height: 1.15; display: block; margin-bottom: 4px; color: var(--fg); }
+ol.tracks { list-style: none; margin: 16px 0 0; padding: 0; border-top: 1px solid var(--line); }
+li.track { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; column-gap: 12px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.tn { grid-row: 1 / 3; font-family: var(--font-display); font-weight: 600; font-size: 28px; color: var(--clay); line-height: 1; }
+.tt { grid-column: 2; grid-row: 1; font-family: var(--font-display); font-weight: 600; font-size: 18px; line-height: 1.25; overflow-wrap: anywhere; }
+.tm { grid-column: 2; grid-row: 2; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 14px; color: var(--muted); margin-top: 2px; }
+.tg { font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; background: var(--sand-t); color: var(--fg); border-radius: 999px; padding: 1px 9px; }
+.go { grid-column: 3; grid-row: 1 / 3; min-height: 44px; display: inline-flex; align-items: center; padding: 0 18px; background: var(--accent); color: var(--on-accent); border-radius: 999px; text-decoration: none; font-weight: 600; font-size: 14px; }
+
+footer { border-top: 1px solid var(--line); background: var(--surface); }
+footer .in { padding-block: 24px 36px; font-size: 14px; color: var(--muted); display: flex; flex-direction: column; gap: 6px; }
+footer strong { color: var(--fg); }
 </style>
 </head>
 <body>
 
-<div class="wrap">
-  <header>
-    <span class="plate">Мастерская · ремонт и восстановление</span>
-    <h1>Записки механика</h1>
-    <p class="lead">Как я чиню и восстанавливаю машины: что сломалось, что сделал, что получилось. С ошибками тоже.</p>
-  </header>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="car-sedan" viewBox="0 0 320 118">
+      <g stroke-linejoin="round" stroke-linecap="round">
+        <polygon points="8,94 8,78 70,66 96,40 206,40 236,66 304,72 310,94" fill="currentColor" stroke="currentColor" stroke-width="6"/>
+        <polygon points="100,46 146,46 146,64 82,64" fill="var(--glass)" stroke="none"/>
+        <polygon points="152,46 202,46 224,64 152,64" fill="var(--glass)" stroke="none"/>
+        <rect x="8" y="78" width="12" height="8" rx="2" fill="#f3dc9a" stroke="none"/>
+        <rect x="300" y="74" width="8" height="9" rx="2" fill="#d9695c" stroke="none"/>
+      </g>
+      <circle cx="72" cy="94" r="27" fill="var(--well)"/><circle cx="246" cy="94" r="27" fill="var(--well)"/>
+      <circle cx="72" cy="94" r="21" fill="var(--wheel)"/><circle cx="72" cy="94" r="10" fill="var(--hub)"/><circle cx="72" cy="94" r="3" fill="var(--wheel)"/>
+      <circle cx="246" cy="94" r="21" fill="var(--wheel)"/><circle cx="246" cy="94" r="10" fill="var(--hub)"/><circle cx="246" cy="94" r="3" fill="var(--wheel)"/>
+    </symbol>
+    <symbol id="car-wagon" viewBox="0 0 320 118">
+      <g stroke-linejoin="round" stroke-linecap="round">
+        <polygon points="8,94 8,78 70,66 96,40 252,40 292,50 308,70 310,94" fill="currentColor" stroke="currentColor" stroke-width="6"/>
+        <polygon points="100,46 146,46 146,64 82,64" fill="var(--glass)" stroke="none"/>
+        <polygon points="152,46 214,46 214,64 152,64" fill="var(--glass)" stroke="none"/>
+        <polygon points="220,46 250,46 282,56 284,64 220,64" fill="var(--glass)" stroke="none"/>
+        <rect x="8" y="78" width="12" height="8" rx="2" fill="#f3dc9a" stroke="none"/>
+        <rect x="300" y="74" width="8" height="9" rx="2" fill="#d9695c" stroke="none"/>
+      </g>
+      <circle cx="72" cy="94" r="27" fill="var(--well)"/><circle cx="246" cy="94" r="27" fill="var(--well)"/>
+      <circle cx="72" cy="94" r="21" fill="var(--wheel)"/><circle cx="72" cy="94" r="10" fill="var(--hub)"/><circle cx="72" cy="94" r="3" fill="var(--wheel)"/>
+      <circle cx="246" cy="94" r="21" fill="var(--wheel)"/><circle cx="246" cy="94" r="10" fill="var(--hub)"/><circle cx="246" cy="94" r="3" fill="var(--wheel)"/>
+    </symbol>
+    <symbol id="car-pickup" viewBox="0 0 320 118">
+      <g stroke-linejoin="round" stroke-linecap="round">
+        <polygon points="8,94 8,78 58,68 82,42 150,42 164,62 310,62 310,94" fill="currentColor" stroke="currentColor" stroke-width="6"/>
+        <polygon points="90,48 144,48 156,62 72,62" fill="var(--glass)" stroke="none"/>
+        <rect x="8" y="78" width="12" height="8" rx="2" fill="#f3dc9a" stroke="none"/>
+        <rect x="300" y="68" width="8" height="9" rx="2" fill="#d9695c" stroke="none"/>
+      </g>
+      <circle cx="68" cy="94" r="27" fill="var(--well)"/><circle cx="246" cy="94" r="27" fill="var(--well)"/>
+      <circle cx="68" cy="94" r="21" fill="var(--wheel)"/><circle cx="68" cy="94" r="10" fill="var(--hub)"/><circle cx="68" cy="94" r="3" fill="var(--wheel)"/>
+      <circle cx="246" cy="94" r="21" fill="var(--wheel)"/><circle cx="246" cy="94" r="10" fill="var(--hub)"/><circle cx="246" cy="94" r="3" fill="var(--wheel)"/>
+    </symbol>
+  </defs>
+</svg>
 
-  <section aria-labelledby="now">
-    <h2 id="now">Сейчас в работе</h2>
-    <div class="job">
-      <div class="job-head">
-        <span class="job-no">ЗАКАЗ-НАРЯД № 001</span>
-        <span class="job-no">ПРИМЕР</span>
+<header class="top">
+  <div class="stripe"></div>
+  <div class="in brand">
+    <svg width="32" height="32" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true">
+      <circle cx="24" cy="24" r="11"/><circle cx="24" cy="24" r="4"/>
+      <g fill="currentColor" stroke="none">
+        <rect x="21" y="4" width="6" height="8" rx="1"/>
+        <rect x="21" y="4" width="6" height="8" rx="1" transform="rotate(45 24 24)"/>
+        <rect x="21" y="4" width="6" height="8" rx="1" transform="rotate(90 24 24)"/>
+        <rect x="21" y="4" width="6" height="8" rx="1" transform="rotate(135 24 24)"/>
+        <rect x="21" y="4" width="6" height="8" rx="1" transform="rotate(180 24 24)"/>
+        <rect x="21" y="4" width="6" height="8" rx="1" transform="rotate(225 24 24)"/>
+        <rect x="21" y="4" width="6" height="8" rx="1" transform="rotate(270 24 24)"/>
+        <rect x="21" y="4" width="6" height="8" rx="1" transform="rotate(315 24 24)"/>
+      </g>
+    </svg>
+    <span class="brand-name">Записки механика</span>
+    <button class="theme-btn" type="button" id="theme">Тёмная тема</button>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Разделы сайта">
+  <div class="in">
+    <div role="tablist">
+      <button class="tab" role="tab" type="button" data-tab="home" id="t-home" aria-controls="p-home" aria-selected="true">Главная</button>
+      <button class="tab" role="tab" type="button" data-tab="posts" id="t-posts" aria-controls="p-posts" aria-selected="false">Записи</button>
+      <button class="tab" role="tab" type="button" data-tab="garage" id="t-garage" aria-controls="p-garage" aria-selected="false">Гараж</button>
+      <button class="tab" role="tab" type="button" data-tab="tools" id="t-tools" aria-controls="p-tools" aria-selected="false">Инструменты</button>
+      <button class="tab" role="tab" type="button" data-tab="music" id="t-music" aria-controls="p-music" aria-selected="false">Плейлист</button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <section id="p-home" role="tabpanel" aria-labelledby="t-home">
+    <div class="hero">
+      <div class="in">
+        <span class="eyebrow">Мастерская · ремонт и восстановление</span>
+        <h1>Чиню. Восстанавливаю. Рассказываю.</h1>
+        <p class="hero-lead">Я механик. Здесь я пишу, что сломалось, что сделал и что получилось. Ошибки тоже.</p>
+        <div class="scene">
+          <svg viewBox="0 0 320 118" role="img" aria-label="Иллюстрация: старый седан"><use href="#car-sedan"/></svg>
+        </div>
       </div>
-      <p class="job-title">Восстановление кузова</p>
-      <dl class="specs">
-        <dt>Машина</dt><dd>Ваша машина: марка, год</dd>
-        <dt>Работы</dt><dd>Сварка порогов, подготовка под покраску</dd>
-        <dt>Статус</dt><dd>В процессе</dd>
-      </dl>
+      <div class="road"></div>
+    </div>
+
+    <div class="in stack">
       <div>
-        <div class="progress" role="img" aria-label="Готовность 40 процентов"><span></span></div>
-        <div class="progress-cap"><span>Готовность</span><span>40%</span></div>
+        <h3 class="sec">Сейчас в работе</h3>
+        <div class="job">
+          <div class="job-head">
+            <span class="job-no">Заказ-наряд № 001</span>
+            <span class="ex">Пример</span>
+          </div>
+          <p class="job-title">Восстановление кузова</p>
+          <dl class="specs">
+            <dt>Машина</dt><dd>Ваша машина: марка, год</dd>
+            <dt>Работы</dt><dd>Сварка порогов, подготовка под покраску</dd>
+            <dt>Статус</dt><dd>В процессе</dd>
+          </dl>
+          <div>
+            <div class="progress" role="img" aria-label="Готовность 40 процентов"><span></span></div>
+            <div class="progress-cap"><span>Готовность</span><span>40%</span></div>
+          </div>
+        </div>
       </div>
-      <p class="note">Это образец карточки. Напишите Claude свою машину и работы, и я заменю текст.</p>
+
+      <div>
+        <h3 class="sec">Что делаю</h3>
+        <div class="svcs">
+          <div class="svc c-sage"><h4>Диагностика</h4><p>Осмотр подвески и тормозов, компьютерная диагностика, замеры.</p></div>
+          <div class="svc c-blue"><h4>Двигатель</h4><p>Ремонт, замена ремня или цепи ГРМ, прокладки, масло.</p></div>
+          <div class="svc c-sand"><h4>Ходовая и тормоза</h4><p>Рычаги, амортизаторы, колодки, диски, подшипники ступиц.</p></div>
+          <div class="svc c-clay"><h4>Электрика</h4><p>Проводка, генератор, стартёр, датчики, свет.</p></div>
+          <div class="svc c-blue"><h4>Кузов и покраска</h4><p>Сварка порогов и арок, рихтовка, подготовка под покраску.</p></div>
+          <div class="svc c-sage"><h4>Восстановление</h4><p>Машина с нуля: разборка, кузов, механика, салон.</p></div>
+        </div>
+        <p class="note" style="margin-top:12px">Список примерный. Скажите, что поправить.</p>
+      </div>
+
+      <div>
+        <h3 class="sec">Как проходит работа</h3>
+        <ol class="steps">
+          <li><span class="n">1</span><div><h4>Осмотр и разговор</h4><p>Смотрю машину, слушаю, что беспокоит, и понимаю объём работы.</p></div></li>
+          <li><span class="n">2</span><div><h4>Смета</h4><p>Называю цену работ и запчастей до начала ремонта.</p></div></li>
+          <li><span class="n">3</span><div><h4>Ремонт с фотоотчётом</h4><p>Снимаю главные этапы и показываю, что было и что стало.</p></div></li>
+          <li><span class="n">4</span><div><h4>Проверка на дороге</h4><p>Езжу сам, чтобы убедиться, что всё работает как надо.</p></div></li>
+          <li><span class="n">5</span><div><h4>Выдача и советы</h4><p>Отдаю машину и рассказываю, за чем следить дальше.</p></div></li>
+        </ol>
+      </div>
+
+      <div class="contact">
+        <h3>Связь</h3>
+        <dl>
+          <dt>Телефон</dt><dd>Добавьте свой номер</dd>
+          <dt>Мессенджер</dt><dd>Добавьте ссылку</dd>
+          <dt>Город</dt><dd>Добавьте город</dd>
+          <dt>Часы</dt><dd>Добавьте часы работы</dd>
+        </dl>
+      </div>
     </div>
   </section>
 
-  <section aria-labelledby="posts">
-    <h2 id="posts">Записи</h2>
-    <div class="filters" role="group" aria-label="Фильтр по темам">
-      <button class="chip" type="button" data-tag="all" aria-pressed="true">Все</button>
-      <button class="chip" type="button" data-tag="repair" aria-pressed="false">Ремонт</button>
-      <button class="chip" type="button" data-tag="restore" aria-pressed="false">Восстановление</button>
-      <button class="chip" type="button" data-tag="tips" aria-pressed="false">Советы</button>
-    </div>
-
-    <div class="posts" id="list">
-      <details class="post" data-tag="tips">
-        <summary>
-          <span class="meta"><span class="tag">Советы</span><span>Пример записи</span></span>
-          <h3>Как снять закисший болт</h3>
-          <span class="more"></span>
-        </summary>
-        <div class="body">
-          <p>Первое правило: не дёргать сразу. Сорвёте грани, и работы станет вдвое больше.</p>
-          <ul>
-            <li>Залейте проникающую смазку и подождите, лучше несколько часов.</li>
-            <li>Используйте торцевую головку, а не рожковый ключ: она держит все грани.</li>
-            <li>Сначала чуть довернуть на затяжку, потом откручивать. Резьба часто «стреляет».</li>
-            <li>Если не идёт, нагрейте гайку, а не болт, и дайте остыть.</li>
-          </ul>
+  <section id="p-posts" role="tabpanel" aria-labelledby="t-posts" hidden>
+    <div class="pagehead ph-clay"><div class="in">
+      <h2>Записи</h2>
+      <p>Что чинил, чему научился и что бы сделал иначе.</p>
+    </div></div>
+    <div class="in stack">
+      <div>
+        <div class="filters" role="group" aria-label="Фильтр по темам" style="margin-bottom:16px">
+          <button class="chip" type="button" data-filter="all" aria-pressed="true">Все</button>
+          <button class="chip" type="button" data-filter="repair" aria-pressed="false">Ремонт</button>
+          <button class="chip" type="button" data-filter="restore" aria-pressed="false">Восстановление</button>
+          <button class="chip" type="button" data-filter="tips" aria-pressed="false">Советы</button>
         </div>
-      </details>
+        <div class="posts">
+          <details class="post" data-tag="tips">
+            <summary>
+              <span class="meta"><span class="tagc t-tips">Советы</span><span>Пример записи</span></span>
+              <h4>Как снять закисший болт</h4>
+              <span class="more"></span>
+            </summary>
+            <div class="pbody">
+              <p>Первое правило: не дёргать сразу. Сорвёте грани, и работы станет вдвое больше.</p>
+              <ul>
+                <li>Залейте проникающую смазку и подождите, лучше несколько часов.</li>
+                <li>Используйте торцевую головку, а не рожковый ключ: она держит все грани.</li>
+                <li>Сначала чуть довернуть на затяжку, потом откручивать. Резьба часто «стреляет».</li>
+                <li>Если не идёт, нагрейте гайку, а не болт, и дайте остыть.</li>
+              </ul>
+            </div>
+          </details>
 
-      <details class="post" data-tag="restore">
-        <summary>
-          <span class="meta"><span class="tag">Восстановление</span><span>Пример записи</span></span>
-          <h3>С чего начинать восстановление старой машины</h3>
-          <span class="more"></span>
-        </summary>
-        <div class="body">
-          <p>Перед тем как что-то разбирать, я фотографирую всё: подкапотное, проводку, крепления. Через месяц память подведёт, а снимки нет.</p>
-          <ul>
-            <li>Осмотр кузова и днища: ржавчина решает, стоит ли браться.</li>
-            <li>Список всего, что нужно найти или заказать.</li>
-            <li>Разборка с маркировкой: пакеты и подписи на каждой группе деталей.</li>
-          </ul>
-        </div>
-      </details>
+          <details class="post" data-tag="restore">
+            <summary>
+              <span class="meta"><span class="tagc t-restore">Восстановление</span><span>Пример записи</span></span>
+              <h4>С чего начинать восстановление старой машины</h4>
+              <span class="more"></span>
+            </summary>
+            <div class="pbody">
+              <p>Перед тем как что-то разбирать, я фотографирую всё: подкапотное, проводку, крепления. Через месяц память подведёт, а снимки нет.</p>
+              <ul>
+                <li>Осмотр кузова и днища: ржавчина решает, стоит ли браться.</li>
+                <li>Список всего, что нужно найти или заказать.</li>
+                <li>Разборка с маркировкой: пакеты и подписи на каждой группе деталей.</li>
+              </ul>
+            </div>
+          </details>
 
-      <details class="post" data-tag="repair">
-        <summary>
-          <span class="meta"><span class="tag">Ремонт</span><span>Пример записи</span></span>
-          <h3>Машина не заводится: порядок проверки</h3>
-          <span class="more"></span>
-        </summary>
-        <div class="body">
-          <p>Не начинайте с дорогого. Сначала то, что проверяется за пять минут.</p>
-          <ul>
-            <li>Аккумулятор и клеммы: напряжение и чистота контактов.</li>
-            <li>Топливо: слышно ли, как работает бензонасос при включении зажигания.</li>
-            <li>Искра и свечи.</li>
-            <li>Только потом датчики и электроника.</li>
-          </ul>
+          <details class="post" data-tag="repair">
+            <summary>
+              <span class="meta"><span class="tagc t-repair">Ремонт</span><span>Пример записи</span></span>
+              <h4>Машина не заводится: порядок проверки</h4>
+              <span class="more"></span>
+            </summary>
+            <div class="pbody">
+              <p>Не начинайте с дорогого. Сначала то, что проверяется за пять минут.</p>
+              <ul>
+                <li>Аккумулятор и клеммы: напряжение и чистота контактов.</li>
+                <li>Топливо: слышно ли, как работает бензонасос при включении зажигания.</li>
+                <li>Искра и свечи.</li>
+                <li>Только потом датчики и электроника.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details class="post" data-tag="tips">
+            <summary>
+              <span class="meta"><span class="tagc t-tips">Советы</span><span>Пример записи</span></span>
+              <h4>Что проверить при покупке старой машины</h4>
+              <span class="more"></span>
+            </summary>
+            <div class="pbody">
+              <p>Хороший осмотр занимает час и может сэкономить годы ремонтов.</p>
+              <ul>
+                <li>Пороги, арки и днище: ржавчина и следы старой сварки.</li>
+                <li>Зазоры между кузовными деталями: ровные ли.</li>
+                <li>Документы: номер VIN на кузове должен совпадать с бумагами.</li>
+                <li>Двигатель: дым из выхлопа, следы масла, ровная ли работа на холодную.</li>
+                <li>Подвеска: стуки и люфты на неровностях.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details class="post" data-tag="repair">
+            <summary>
+              <span class="meta"><span class="tagc t-repair">Ремонт</span><span>Пример записи</span></span>
+              <h4>Почему не стоит тянуть со сменой масла</h4>
+              <span class="more"></span>
+            </summary>
+            <div class="pbody">
+              <p>Со временем масло теряет свойства и копит загрязнения. На старых моторах это заметнее всего.</p>
+              <ul>
+                <li>Меняйте по регламенту из руководства к машине.</li>
+                <li>В городе, в пробках и при коротких поездках меняйте чаще.</li>
+                <li>Вязкость и допуски берите из руководства, а не «что посоветовали».</li>
+              </ul>
+            </div>
+          </details>
         </div>
-      </details>
+      </div>
     </div>
   </section>
 
-  <footer>
+  <section id="p-garage" role="tabpanel" aria-labelledby="t-garage" hidden>
+    <div class="pagehead ph-sage"><div class="in">
+      <h2>Гараж</h2>
+      <p>Машины, с которыми я работал: что сделано и что осталось.</p>
+    </div></div>
+    <div class="in stack">
+      <div class="projs">
+        <article class="proj">
+          <div class="shot" style="--shot: var(--sand-t); color: var(--car-blue);">
+            <svg viewBox="0 0 320 118" role="img" aria-label="Иллюстрация: седан"><use href="#car-sedan"/></svg>
+            <div class="road"></div>
+          </div>
+          <div class="proj-in">
+            <span class="st" style="background:var(--sage-t)">Готово</span>
+            <h4>Седан 80-х годов</h4>
+            <dl class="specs">
+              <dt>Кузов</dt><dd>Заменены пороги, покраска</dd>
+              <dt>Механика</dt><dd>Двигатель перебран, новая подвеска</dd>
+              <dt>Итог</dt><dd>Вернулся на дорогу</dd>
+            </dl>
+            <span class="ex">Пример</span>
+          </div>
+        </article>
+
+        <article class="proj">
+          <div class="shot" style="--shot: var(--sage-t); color: var(--car-clay);">
+            <svg viewBox="0 0 320 118" role="img" aria-label="Иллюстрация: универсал"><use href="#car-wagon"/></svg>
+            <div class="road"></div>
+          </div>
+          <div class="proj-in">
+            <span class="st" style="background:var(--clay-t)">В работе</span>
+            <h4>Универсал 90-х</h4>
+            <dl class="specs">
+              <dt>Кузов</dt><dd>Сварка арок</dd>
+              <dt>Механика</dt><dd>Замена ГРМ и тормозной системы</dd>
+              <dt>Осталось</dt><dd>Покраска и сборка салона</dd>
+            </dl>
+            <span class="ex">Пример</span>
+          </div>
+        </article>
+
+        <article class="proj">
+          <div class="shot" style="--shot: var(--blue-t); color: var(--car-sand);">
+            <svg viewBox="0 0 320 118" role="img" aria-label="Иллюстрация: пикап"><use href="#car-pickup"/></svg>
+            <div class="road"></div>
+          </div>
+          <div class="proj-in">
+            <span class="st" style="background:var(--sand-t)">Ждёт запчасти</span>
+            <h4>Пикап, рабочая лошадка</h4>
+            <dl class="specs">
+              <dt>Кузов</dt><dd>Осмотр, список замечаний</dd>
+              <dt>Механика</dt><dd>Диагностика трансмиссии</dd>
+              <dt>Осталось</dt><dd>Привезти детали и собрать</dd>
+            </dl>
+            <span class="ex">Пример</span>
+          </div>
+        </article>
+      </div>
+      <p class="note">Это образцы. Пришлите мне свои фотографии и данные по машинам, и я вставлю настоящие.</p>
+    </div>
+  </section>
+
+  <section id="p-tools" role="tabpanel" aria-labelledby="t-tools" hidden>
+    <div class="pagehead ph-sand"><div class="in">
+      <h2>Инструменты</h2>
+      <p>То, без чего я не начинаю ни один ремонт.</p>
+    </div></div>
+    <div class="in stack">
+      <div class="tools">
+        <div class="tool">
+          <div class="ico" style="background:var(--sand-t)">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><g transform="rotate(35 24 24)"><rect x="21" y="18" width="6" height="26" rx="3"/><circle cx="24" cy="12" r="9"/><polygon points="24,6.5 28.8,9.3 28.8,14.7 24,17.5 19.2,14.7 19.2,9.3"/></g></svg>
+          </div>
+          <h4>Динамометрический ключ</h4>
+          <p>Затягивает гайки и болты с нужным усилием: резьба не срывается и не ослабнет.</p>
+        </div>
+        <div class="tool">
+          <div class="ico" style="background:var(--clay-t)">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><rect x="8" y="12" width="32" height="24" rx="3"/><circle cx="16" cy="24" r="4"/><circle cx="32" cy="24" r="4"/><line x1="20" y1="24" x2="28" y2="24"/><line x1="12" y1="42" x2="36" y2="42"/></svg>
+          </div>
+          <h4>Набор головок и ключей</h4>
+          <p>Основа любой разборки. Головки держат все грани и не срывают крепёж.</p>
+        </div>
+        <div class="tool">
+          <div class="ico" style="background:var(--sage-t)">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><rect x="12" y="6" width="24" height="36" rx="4"/><rect x="16" y="10" width="16" height="9" rx="1"/><circle cx="24" cy="29" r="5"/><line x1="24" y1="29" x2="27" y2="26"/><circle cx="18" cy="38" r="1.5"/><circle cx="30" cy="38" r="1.5"/></svg>
+          </div>
+          <h4>Мультиметр</h4>
+          <p>Меряет напряжение и сопротивление. Находит обрыв в проводке и мёртвый датчик.</p>
+        </div>
+        <div class="tool">
+          <div class="ico" style="background:var(--blue-t)">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><polygon points="24,10 40,26 24,42 8,26"/><line x1="8" y1="26" x2="40" y2="26"/><line x1="14" y1="8" x2="34" y2="8"/><line x1="6" y1="45" x2="42" y2="45"/></svg>
+          </div>
+          <h4>Домкрат и стойки</h4>
+          <p>Домкрат только поднимает машину. Держать её должны подставные стойки.</p>
+        </div>
+        <div class="tool">
+          <div class="ico" style="background:var(--sand-t)">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><rect x="22" y="4" width="4" height="6"/><rect x="19" y="10" width="10" height="14" rx="2"/><rect x="16" y="24" width="16" height="6"/><rect x="20" y="30" width="8" height="10"/><path d="M24 40 v4 h6"/></svg>
+          </div>
+          <h4>Компрессометр</h4>
+          <p>Показывает давление в цилиндрах и помогает понять, в каком состоянии двигатель.</p>
+        </div>
+        <div class="tool">
+          <div class="ico" style="background:var(--clay-t)">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><rect x="10" y="22" width="22" height="18" rx="3"/><rect x="14" y="16" width="10" height="6"/><path d="M32 28 L42 18 L45 18"/><path d="M10 28 Q4 28 4 24 Q4 20 10 20"/></svg>
+          </div>
+          <h4>Масла и смазки</h4>
+          <p>Моторное масло, консистентная смазка и проникающая смазка для закисшего крепежа.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="p-music" role="tabpanel" aria-labelledby="t-music" hidden>
+    <div class="pagehead ph-blue"><div class="in">
+      <h2>Плейлист</h2>
+      <p>Музыка, под которую идёт работа в гараже.</p>
+    </div></div>
+    <div class="in stack">
+      <div class="deck">
+        <svg viewBox="0 0 140 90" role="img" aria-label="Иллюстрация: кассета">
+          <rect x="2" y="2" width="136" height="86" rx="10" fill="var(--sage-t)" stroke="var(--sage)" stroke-width="2"/>
+          <rect x="14" y="10" width="112" height="38" rx="5" fill="var(--sand-t)"/>
+          <text x="22" y="26" font-family="IBM Plex Mono, monospace" font-size="9" fill="#26302f">SIDE A · ГАРАЖ</text>
+          <line x1="22" y1="36" x2="118" y2="36" stroke="#26302f" stroke-width="1.2"/>
+          <circle cx="44" cy="62" r="12" fill="#fbfbf9" stroke="#26302f" stroke-width="1.5"/><circle cx="44" cy="62" r="5" fill="#26302f"/>
+          <circle cx="96" cy="62" r="12" fill="#fbfbf9" stroke="#26302f" stroke-width="1.5"/><circle cx="96" cy="62" r="5" fill="#26302f"/>
+          <path d="M30 88 L40 76 L100 76 L110 88 Z" fill="var(--sage)"/>
+        </svg>
+        <p><strong>Музыка для мастерской</strong>У каждой работы свой ритм. Выберите стиль, нажмите «Найти» и слушайте в YouTube.</p>
+      </div>
+
+      <div>
+        <div class="seg" role="group" aria-label="Стиль музыки">
+          <button class="chip" type="button" data-list="rock" aria-pressed="true">Рок</button>
+          <button class="chip" type="button" data-list="pop" aria-pressed="false">Поп</button>
+          <button class="chip" type="button" data-list="ru" aria-pressed="false">Русский рок</button>
+        </div>
+        <ol class="tracks" id="tracks"></ol>
+        <p class="note" style="margin-top:14px">Подборка примерная. Назовите свои любимые треки, и я заменю их.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="in">
     <strong>Хотите добавить свою запись?</strong>
-    <span>Напишите Claude в чате тему и пару мыслей. Я оформлю запись и обновлю эту страницу по той же ссылке.</span>
-    <button class="chip theme-btn" type="button" id="theme">Сменить тему</button>
-  </footer>
-</div>
+    <span>Напишите Claude тему и пару мыслей. Он оформит запись и обновит страницу.</span>
+  </div>
+</footer>
 
 <script>
 (function () {
-  var chips = document.querySelectorAll('.chip[data-tag]');
+  var TABS = ['home', 'posts', 'garage', 'tools', 'music'];
+  var tabBtns = document.querySelectorAll('.tab');
+  var header = document.querySelector('.top');
+
+  function showTab(id, keepScroll) {
+    if (TABS.indexOf(id) < 0) { id = 'home'; }
+    tabBtns.forEach(function (b) { b.setAttribute('aria-selected', b.getAttribute('data-tab') === id ? 'true' : 'false'); });
+    TABS.forEach(function (t) { document.getElementById('p-' + t).hidden = (t !== id); });
+    try { history.replaceState(null, '', '#' + id); } catch (e) {}
+    if (!keepScroll && window.scrollY > header.offsetHeight) { window.scrollTo(0, header.offsetHeight); }
+    var active = document.getElementById('t-' + id);
+    if (active && active.scrollIntoView) { try { active.scrollIntoView({ inline: 'center', block: 'nearest' }); } catch (e) {} }
+  }
+  tabBtns.forEach(function (b) { b.addEventListener('click', function () { showTab(b.getAttribute('data-tab')); }); });
+
+  var fchips = document.querySelectorAll('[data-filter]');
   var posts = document.querySelectorAll('.post');
-  chips.forEach(function (chip) {
+  fchips.forEach(function (chip) {
     chip.addEventListener('click', function () {
-      var tag = chip.getAttribute('data-tag');
-      chips.forEach(function (c) { c.setAttribute('aria-pressed', c === chip ? 'true' : 'false'); });
+      var tag = chip.getAttribute('data-filter');
+      fchips.forEach(function (c) { c.setAttribute('aria-pressed', c === chip ? 'true' : 'false'); });
       posts.forEach(function (p) { p.hidden = !(tag === 'all' || p.getAttribute('data-tag') === tag); });
     });
   });
-  document.getElementById('theme').addEventListener('click', function () {
-    var root = document.documentElement;
-    var dark = root.getAttribute('data-theme') === 'dark' ||
-      (!root.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    root.setAttribute('data-theme', dark ? 'light' : 'dark');
+
+  var LISTS = {
+    rock: [
+      ['Highway to Hell', 'AC/DC', 'Разборка'],
+      ['Back in Black', 'AC/DC', 'Сварка'],
+      ['Born to Be Wild', 'Steppenwolf', 'Тест-драйв'],
+      ['Smoke on the Water', 'Deep Purple', 'Двигатель'],
+      ['Seven Nation Army', 'The White Stripes', 'Шлифовка'],
+      ['Don\u2019t Stop Me Now', 'Queen', 'Финиш']
+    ],
+    pop: [
+      ['Dancing Queen', 'ABBA', 'Разборка'],
+      ['Uptown Funk', 'Mark Ronson feat. Bruno Mars', 'Сварка'],
+      ['Blinding Lights', 'The Weeknd', 'Ночная смена'],
+      ['Levitating', 'Dua Lipa', 'Шлифовка'],
+      ['Wake Me Up Before You Go-Go', 'Wham!', 'Покраска'],
+      ['Happy', 'Pharrell Williams', 'Финиш']
+    ],
+    ru: [
+      ['Группа крови', 'Кино', 'Разборка'],
+      ['Звезда по имени Солнце', 'Кино', 'Ночная смена'],
+      ['Перемен', 'Кино', 'Сварка'],
+      ['Скованные одной цепью', 'Наутилус Помпилиус', 'Двигатель'],
+      ['Выхода нет', 'Сплин', 'Диагностика'],
+      ['Как на войне', 'Агата Кристи', 'Финиш']
+    ]
+  };
+  var tracksEl = document.getElementById('tracks');
+  function renderList(key) {
+    tracksEl.textContent = '';
+    LISTS[key].forEach(function (t, i) {
+      var li = document.createElement('li'); li.className = 'track';
+      var n = document.createElement('span'); n.className = 'tn'; n.textContent = i + 1;
+      var title = document.createElement('span'); title.className = 'tt'; title.textContent = t[0];
+      var meta = document.createElement('span'); meta.className = 'tm';
+      var artist = document.createElement('span'); artist.textContent = t[1];
+      var tag = document.createElement('span'); tag.className = 'tg'; tag.textContent = t[2];
+      meta.appendChild(artist); meta.appendChild(tag);
+      var a = document.createElement('a'); a.className = 'go'; a.textContent = 'Найти';
+      a.href = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(t[1] + ' ' + t[0]);
+      a.target = '_blank'; a.rel = 'noopener noreferrer';
+      a.setAttribute('aria-label', 'Найти трек ' + t[0] + ' в YouTube');
+      li.appendChild(n); li.appendChild(title); li.appendChild(a); li.appendChild(meta);
+      tracksEl.appendChild(li);
+    });
+  }
+  var lchips = document.querySelectorAll('[data-list]');
+  lchips.forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      lchips.forEach(function (c) { c.setAttribute('aria-pressed', c === chip ? 'true' : 'false'); });
+      renderList(chip.getAttribute('data-list'));
+    });
   });
+  renderList('rock');
+
+  var themeBtn = document.getElementById('theme');
+  themeBtn.addEventListener('click', function () {
+    var root = document.documentElement;
+    var dark = root.getAttribute('data-theme') === 'dark';
+    root.setAttribute('data-theme', dark ? 'light' : 'dark');
+    themeBtn.textContent = dark ? 'Тёмная тема' : 'Светлая тема';
+  });
+
+  showTab((location.hash || '').replace('#', ''), true);
 })();
 </script>
-
 </body>
 </html>
