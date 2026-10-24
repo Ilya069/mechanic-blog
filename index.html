@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Записки механика</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: одна колонка, как страница из рабочего блокнота; сверху шапка-табличка, ниже заказ-наряд "в работе" и лента записей */
+:root {
+  --bg: #e8ebeb;
+  --surface: #f6f7f7;
+  --fg: #172120;
+  --muted: #5a6866;
+  --line: #c3cac9;
+  --accent: #245a8d;
+  --accent-fg: #ffffff;
+  --brass: #9a7420;
+  --font-display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111819;
+    --surface: #1a2324;
+    --fg: #e3e8e7;
+    --muted: #93a2a0;
+    --line: #2f3c3d;
+    --accent: #78aadb;
+    --accent-fg: #0e1517;
+    --brass: #d2a94c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111819;
+  --surface: #1a2324;
+  --fg: #e3e8e7;
+  --muted: #93a2a0;
+  --line: #2f3c3d;
+  --accent: #78aadb;
+  --accent-fg: #0e1517;
+  --brass: #d2a94c;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  padding-block: 0 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px; }
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* Шапка-табличка */
+header { padding-top: 28px; display: flex; flex-direction: column; gap: 10px; border-bottom: 3px solid var(--fg); padding-bottom: 18px; }
+.plate { font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--brass); }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(44px, 14vw, 68px); line-height: .95; text-transform: uppercase; letter-spacing: .01em; margin: 0; text-wrap: balance; }
+.lead { margin: 0; color: var(--muted); max-width: 46ch; }
+
+h2 { font-family: var(--font-display); font-weight: 600; font-size: 26px; text-transform: uppercase; letter-spacing: .04em; margin: 0 0 12px; text-wrap: balance; }
+
+/* Заказ-наряд */
+.job { background: var(--surface); border: 1px solid var(--line); border-top: 6px solid var(--accent); padding: 18px 16px; display: flex; flex-direction: column; gap: 14px; }
+.job-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: baseline; }
+.job-no { font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+.job-title { font-family: var(--font-display); font-size: 28px; font-weight: 700; text-transform: uppercase; line-height: 1.05; margin: 0; }
+dl.specs { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; font-size: 15px; }
+dl.specs dt { font-family: var(--font-mono); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding-top: 3px; }
+dl.specs dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.progress { height: 10px; background: var(--bg); border: 1px solid var(--line); }
+.progress > span { display: block; height: 100%; width: 40%; background: var(--accent); }
+.progress-cap { font-family: var(--font-mono); font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+.note { font-size: 13px; color: var(--muted); margin: 0; }
+
+/* Фильтры */
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.chip { font: 500 14px var(--font-body); background: transparent; color: var(--fg); border: 1.5px solid var(--fg); padding: 8px 14px; min-height: 44px; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+
+/* Записи */
+.posts { display: flex; flex-direction: column; gap: 12px; }
+.post { background: var(--surface); border: 1px solid var(--line); }
+.post[hidden] { display: none; }
+.post summary { list-style: none; cursor: pointer; padding: 16px; display: flex; flex-direction: column; gap: 6px; }
+.post summary::-webkit-details-marker { display: none; }
+.meta { font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.tag { color: var(--brass); }
+.post h3 { font-family: var(--font-display); font-size: 25px; line-height: 1.08; text-transform: uppercase; font-weight: 700; margin: 0; text-wrap: balance; }
+.more { font-size: 14px; color: var(--accent); font-weight: 500; }
+.post[open] .more::after { content: "Свернуть"; }
+.post:not([open]) .more::after { content: "Читать"; }
+.body { padding: 0 16px 18px; display: flex; flex-direction: column; gap: 12px; max-width: 62ch; }
+.body p, .body ul { margin: 0; }
+.body ul { padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+
+footer { border-top: 1px solid var(--line); padding-top: 16px; font-size: 14px; color: var(--muted); display: flex; flex-direction: column; gap: 8px; }
+footer strong { color: var(--fg); font-weight: 600; }
+.theme-btn { align-self: flex-start; }
+@media (prefers-reduced-motion: no-preference) { .progress > span { transition: width .4s ease; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <span class="plate">Мастерская · ремонт и восстановление</span>
+    <h1>Записки механика</h1>
+    <p class="lead">Как я чиню и восстанавливаю машины: что сломалось, что сделал, что получилось. С ошибками тоже.</p>
+  </header>
+
+  <section aria-labelledby="now">
+    <h2 id="now">Сейчас в работе</h2>
+    <div class="job">
+      <div class="job-head">
+        <span class="job-no">ЗАКАЗ-НАРЯД № 001</span>
+        <span class="job-no">ПРИМЕР</span>
+      </div>
+      <p class="job-title">Восстановление кузова</p>
+      <dl class="specs">
+        <dt>Машина</dt><dd>Ваша машина: марка, год</dd>
+        <dt>Работы</dt><dd>Сварка порогов, подготовка под покраску</dd>
+        <dt>Статус</dt><dd>В процессе</dd>
+      </dl>
+      <div>
+        <div class="progress" role="img" aria-label="Готовность 40 процентов"><span></span></div>
+        <div class="progress-cap"><span>Готовность</span><span>40%</span></div>
+      </div>
+      <p class="note">Это образец карточки. Напишите Claude свою машину и работы, и я заменю текст.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="posts">
+    <h2 id="posts">Записи</h2>
+    <div class="filters" role="group" aria-label="Фильтр по темам">
+      <button class="chip" type="button" data-tag="all" aria-pressed="true">Все</button>
+      <button class="chip" type="button" data-tag="repair" aria-pressed="false">Ремонт</button>
+      <button class="chip" type="button" data-tag="restore" aria-pressed="false">Восстановление</button>
+      <button class="chip" type="button" data-tag="tips" aria-pressed="false">Советы</button>
+    </div>
+
+    <div class="posts" id="list">
+      <details class="post" data-tag="tips">
+        <summary>
+          <span class="meta"><span class="tag">Советы</span><span>Пример записи</span></span>
+          <h3>Как снять закисший болт</h3>
+          <span class="more"></span>
+        </summary>
+        <div class="body">
+          <p>Первое правило: не дёргать сразу. Сорвёте грани, и работы станет вдвое больше.</p>
+          <ul>
+            <li>Залейте проникающую смазку и подождите, лучше несколько часов.</li>
+            <li>Используйте торцевую головку, а не рожковый ключ: она держит все грани.</li>
+            <li>Сначала чуть довернуть на затяжку, потом откручивать. Резьба часто «стреляет».</li>
+            <li>Если не идёт, нагрейте гайку, а не болт, и дайте остыть.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="post" data-tag="restore">
+        <summary>
+          <span class="meta"><span class="tag">Восстановление</span><span>Пример записи</span></span>
+          <h3>С чего начинать восстановление старой машины</h3>
+          <span class="more"></span>
+        </summary>
+        <div class="body">
+          <p>Перед тем как что-то разбирать, я фотографирую всё: подкапотное, проводку, крепления. Через месяц память подведёт, а снимки нет.</p>
+          <ul>
+            <li>Осмотр кузова и днища: ржавчина решает, стоит ли браться.</li>
+            <li>Список всего, что нужно найти или заказать.</li>
+            <li>Разборка с маркировкой: пакеты и подписи на каждой группе деталей.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="post" data-tag="repair">
+        <summary>
+          <span class="meta"><span class="tag">Ремонт</span><span>Пример записи</span></span>
+          <h3>Машина не заводится: порядок проверки</h3>
+          <span class="more"></span>
+        </summary>
+        <div class="body">
+          <p>Не начинайте с дорогого. Сначала то, что проверяется за пять минут.</p>
+          <ul>
+            <li>Аккумулятор и клеммы: напряжение и чистота контактов.</li>
+            <li>Топливо: слышно ли, как работает бензонасос при включении зажигания.</li>
+            <li>Искра и свечи.</li>
+            <li>Только потом датчики и электроника.</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <footer>
+    <strong>Хотите добавить свою запись?</strong>
+    <span>Напишите Claude в чате тему и пару мыслей. Я оформлю запись и обновлю эту страницу по той же ссылке.</span>
+    <button class="chip theme-btn" type="button" id="theme">Сменить тему</button>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var chips = document.querySelectorAll('.chip[data-tag]');
+  var posts = document.querySelectorAll('.post');
+  chips.forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      var tag = chip.getAttribute('data-tag');
+      chips.forEach(function (c) { c.setAttribute('aria-pressed', c === chip ? 'true' : 'false'); });
+      posts.forEach(function (p) { p.hidden = !(tag === 'all' || p.getAttribute('data-tag') === tag); });
+    });
+  });
+  document.getElementById('theme').addEventListener('click', function () {
+    var root = document.documentElement;
+    var dark = root.getAttribute('data-theme') === 'dark' ||
+      (!root.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    root.setAttribute('data-theme', dark ? 'light' : 'dark');
+  });
+})();
+</script>
+
+</body>
+</html>
